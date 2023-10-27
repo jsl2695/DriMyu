@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.board.mapper.BoardMapper">
+	<select id="boardList" resultType="kr.board.entity.Board">
+	    select * from board order by boardIdx desc
+	</select>
+	
+	<insert id="boardInsert" parameterType="kr.board.entity.Board">
+	    insert into board (id, boardTitle, boardContent, created)
+	    values(#{id},#{boardTitle},#{boardContent},DATE_FORMAT(NOW(), '%Y-%m-%d %H:%i'))
+	</insert>
+
+	
+	<select id="boardContent" parameterType="int" 
+	    resultType="kr.board.entity.Board">
+		select * from board where boardIdx=#{boardIdx}
+	</select>
+	
+	<update id="boardUpdate" parameterType="kr.board.entity.Board">
+	    update board
+	    set boardTitle=#{boardTitle}, boardContent=#{boardContent}
+	    where boardIdx=#{boardIdx}
+	</update>
+	
+	<delete id="boardDelete" parameterType="int">
+	    delete from board where boardIdx=#{boardIdx}
+	</delete>
+
+	<insert id="insertUser" parameterType="kr.board.entity.UserInfo">
+        INSERT INTO userInfo (id, pw, name, email, phone, region, gender, birthdate, title, keyWord)
+        VALUES (#{id}, #{pw}, #{name}, #{email}, #{phone}, #{region}, #{gender}, #{birthdate}, #{title}, #{keyWord})
+    </insert>
+	
+	<update id="updateUserInfo" parameterType="kr.board.entity.UserInfo">
+       UPDATE userInfo
+       SET pw=#{pw}, 
+           name=#{name}, 
+           phone=#{phone}, 
+           email=#{email}, 
+           region=#{region}, 
+           gender=#{gender},
+           birthdate=#{birthdate},
+           title=#{title}, 
+           keyWord=#{keyWord}
+       WHERE id=#{id}
+   </update>
+	
+	<delete id="deleteUser" parameterType="java.lang.String">
+        DELETE FROM userInfo
+        WHERE id = #{id}
+    </delete>
+	
+	<select id="login" parameterType="kr.board.entity.UserInfo" 
+	    resultType="kr.board.entity.UserInfo">
+	    select * from userInfo where id=#{id} and pw=#{pw}
+	</select>
+	
+	<select id="getBoardWithComments" parameterType="int" resultType="kr.board.entity.Board">
+	    SELECT boardIdx, id, boardTitle, boardContent, created,views,
+	        GROUP_CONCAT(commentNum ORDER BY commentIdx ASC) as commentNums,
+	        GROUP_CONCAT(commentIdx ORDER BY commentIdx ASC) as commentIdxs,
+	        GROUP_CONCAT(commentContent ORDER BY commentIdx ASC) as commentContents,
+	        GROUP_CONCAT(commentCreated ORDER BY commentIdx ASC) as commentCreateds
+	    FROM board
+	    WHERE boardIdx = #{boardIdx}
+	    GROUP BY boardIdx
+	</select>
+	
+	<select id="worksList" resultType="kr.board.entity.works">
+	    select * from works
+	</select>
+	<select id="touristSpotsList" resultType="kr.board.entity.touristSpots">
+	    select * from touristSpots
+	</select>
+	
+</mapper>
